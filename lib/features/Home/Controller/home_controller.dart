@@ -10,6 +10,8 @@ class HomeController extends GetxController {
   final userName = 'Loading...'.obs; 
   
   final childrenList = <ChildModel>[].obs;
+
+
   
   final DioClient _dioClient = DioClient();
 
@@ -31,7 +33,7 @@ class HomeController extends GetxController {
   }
   
   Future<void> _fetchUserData() async {
-    const String uri = '/user/get_User'; 
+    const String uri = '/user/parent/get_current'; 
     
     try {
       final response = await _dioClient.get(uri);
@@ -50,7 +52,7 @@ class HomeController extends GetxController {
 
 
   Future<void> _fetchChildrenList() async {
-    const String uri = '/user/get_Children';
+    const String uri = '/user/child/getChildren';
 
     try {
       final response = await _dioClient.get(uri);
@@ -73,7 +75,7 @@ class HomeController extends GetxController {
     }
   }
 
-  final selectedTabIndex = 0.obs;
+  final selectedTabIndex = 1.obs;
   void changeTab(int index) {
     selectedTabIndex.value = index;
   }
