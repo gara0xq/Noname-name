@@ -7,7 +7,7 @@ class UserModel {
     return UserModel(
       name: json['name'],
       email: json['email'],
-      familyCode: json['family_code'],
+      familyCode: json['family_code'] ?? json['family_code'],
     );
   }
 
