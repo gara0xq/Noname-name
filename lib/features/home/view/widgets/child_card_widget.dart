@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -39,8 +40,9 @@ class ChildCardWidget extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(
+                AutoSizeText(
                   child.name,
+                  maxLines: 1,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.bold,
@@ -49,7 +51,7 @@ class ChildCardWidget extends StatelessWidget {
                 ),
                 const Spacer(),
                 Row(
-                  textDirection: isMale ? TextDirection.rtl : TextDirection.ltr,
+                  textDirection: isMale ? TextDirection.rtl : TextDirection.ltr, spacing: 8,
                   children: [
                     Container(
                       padding: const EdgeInsets.all(6),
@@ -59,7 +61,6 @@ class ChildCardWidget extends StatelessWidget {
                       ),
                       child: SvgPicture.asset("assets/icons/star.svg"),
                     ),
-                    const SizedBox(width: 8),
                     Text(
                       child.points.toString(),
                       style: const TextStyle(

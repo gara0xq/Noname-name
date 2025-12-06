@@ -32,7 +32,6 @@ class AuthController extends GetxController {
     if (loginKey.currentState!.validate()) {
       loadingAimation();
       try {
-        log({"email": lEmail.text, "password": lPassword.text}.toString());
         final response = await dioClient.post(
           uri: uri,
           data: {"email": lEmail.text, "password": lPassword.text},

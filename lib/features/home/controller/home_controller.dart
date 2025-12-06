@@ -58,7 +58,7 @@ class HomeController extends GetxController {
       }
     } catch (e) {
       userName.value = 'Parent';
-      userEmail.value = 'parent@example.com'; // ✅ القيمة الافتراضية
+      userEmail.value = 'parent@example.com';
       familyCode.value = '123456';
       log('Error fetching user data: $e');
     }
