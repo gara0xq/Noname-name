@@ -1,16 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:share_plus/share_plus.dart';
 import 'package:testss/features/home/controller/home_controller.dart';
 import '../../../../core/constants/app_colors.dart';
 
 class FamilyInviteDialog extends StatelessWidget {
-   FamilyInviteDialog({super.key});
+  FamilyInviteDialog({super.key});
 
   final HomeController homeController = Get.find<HomeController>();
 
   void _copyToClipboard() {
-    final code = homeController.familyCode.value;    
+    final code = homeController.familyCode.value;
     Clipboard.setData(ClipboardData(text: code));
     Get.back();
 
@@ -21,6 +22,15 @@ class FamilyInviteDialog extends StatelessWidget {
       backgroundColor: AppColors.primaryGreen,
       colorText: Colors.white,
       duration: const Duration(seconds: 2),
+    );
+  }
+
+  void _shareCode() async {
+    final code = homeController.familyCode.value;
+    final shareMessage = "Hello! Join my family group using this code: $code";
+
+    await SharePlus.instance.share(
+      ShareParams(text: shareMessage, subject: 'Family Group Invitation'),
     );
   }
 
@@ -67,25 +77,30 @@ class FamilyInviteDialog extends StatelessWidget {
 
             const SizedBox(height: 24),
 
-            Obx(() => Container(
-                  padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 24),
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFF5F5F5),
-                    borderRadius: BorderRadius.circular(12),
-                    border: Border.all(color: const Color(0xFFE0E0E0)),
-                  ),
-                  child: Center(
-                    child: Text(
-                      homeController.familyCode.value, 
-                      style: const TextStyle(
-                        fontSize: 28,
-                        fontWeight: FontWeight.bold,
-                        color: AppColors.primaryGreen,
-                        letterSpacing: 2,
-                      ),
+            Obx(
+              () => Container(
+                padding: const EdgeInsets.symmetric(
+                  vertical: 16,
+                  horizontal: 24,
+                ),
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF5F5F5),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: const Color(0xFFE0E0E0)),
+                ),
+                child: Center(
+                  child: Text(
+                    homeController.familyCode.value,
+                    style: const TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: AppColors.primaryGreen,
+                      letterSpacing: 2,
                     ),
                   ),
-                )),
+                ),
+              ),
+            ),
 
             const SizedBox(height: 8),
 
@@ -96,34 +111,57 @@ class FamilyInviteDialog extends StatelessWidget {
 
             const SizedBox(height: 32),
 
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                onPressed: _copyToClipboard,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryGreen,
-                  foregroundColor: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 16),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
-                  elevation: 0,
-                ),
-                child: const Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Icon(Icons.copy, size: 20),
-                    SizedBox(width: 8),
-                    Text(
+            Column(
+              children: [
+                SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton.icon(
+                    onPressed: _copyToClipboard,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: AppColors.primaryGreen,
+                      foregroundColor: Colors.white,
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      elevation: 0,
+                    ),
+                    icon: const Icon(Icons.copy, size: 20),
+                    label: const Text(
                       'Copy Code',
                       style: TextStyle(
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
                       ),
                     ),
-                  ],
+                  ),
                 ),
-              ),
+
+                const SizedBox(height: 12),
+
+                SizedBox(
+                  width: double.infinity,
+                  child: OutlinedButton.icon(
+                    onPressed: _shareCode,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppColors.primaryGreen,
+                      side: const BorderSide(color: AppColors.primaryGreen),
+                      padding: const EdgeInsets.symmetric(vertical: 16),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                    ),
+                    icon: const Icon(Icons.share, size: 20),
+                    label: const Text(
+                      'Share Code',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
             ),
 
             const SizedBox(height: 16),
