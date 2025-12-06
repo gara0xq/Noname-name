@@ -9,12 +9,10 @@ import '../model/user_model.dart';
 import '../model/child_model.dart';
 
 class HomeController extends GetxController {
-  static HomeController get instance =>
-      Get.find<HomeController>(); // ✅ إضافة هذا السطر
 
   final isLoading = true.obs;
   final userName = 'Loading...'.obs;
-  final userEmail = 'Loading...'.obs; // ✅ تأكد أن userEmail موجود
+  final userEmail = 'Loading...'.obs;
   final familyCode = 'Generating...'.obs;
   final childrenList = <ChildModel>[].obs;
 

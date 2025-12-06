@@ -3,21 +3,19 @@ import 'package:get/get.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../widgets/user_profile_card.dart';
 import '../widgets/setting_option_row.dart';
-import '../widgets/family_invite_dialog.dart';
+import '../../controller/settings_controller.dart';
 
-class SettingsScreen extends StatefulWidget {
+class SettingsScreen extends GetView<SettingsController> { 
   const SettingsScreen({super.key});
 
   @override
-  State<SettingsScreen> createState() => _SettingsScreenState();
-}
-
-class _SettingsScreenState extends State<SettingsScreen> {
-  bool isThemeDark = false;
-  bool isLanguageEn = true;
-
-  @override
   Widget build(BuildContext context) {
+    
+    
+    if (Get.isRegistered<SettingsController>() == false) {
+      Get.put<SettingsController>(SettingsController());
+    }
+
     return Scaffold(
       backgroundColor: AppColors.beigeBackground,
       body: SafeArea(
@@ -53,39 +51,33 @@ class _SettingsScreenState extends State<SettingsScreen> {
               SettingOptionRow(
                 title: 'Invite to family',
                 onTap: () {
-                  Get.dialog(FamilyInviteDialog());
+                  controller.showFamilyInviteDialog();
                 },
               ),
               const Divider(indent: 20, endIndent: 20, height: 1),
 
-              SettingOptionRow(
-                title: 'Theme',
-                trailing: Switch(
-                  value: isThemeDark,
-                  onChanged: (bool value) {
-                    setState(() {
-                      isThemeDark = value;
-                    });
-                    print('Theme switch changed to: $value');
-                  },
-                  activeColor: AppColors.taskCardYellow,
-                ),
-              ),
+              Obx(() => SettingOptionRow(
+                    title: 'Theme',
+                    trailing: Switch(
+                      value: controller.isThemeDark.value, 
+                      onChanged: (bool value) {
+                        controller.toggleTheme(value); 
+                      },
+                      activeColor: AppColors.taskCardYellow,
+                    ),
+                  )),
               const Divider(indent: 20, endIndent: 20, height: 1),
 
-              SettingOptionRow(
-                title: 'Language',
-                trailing: Switch(
-                  value: isLanguageEn,
-                  onChanged: (bool value) {
-                    setState(() {
-                      isLanguageEn = value;
-                    });
-                    print('Language switch changed to: $value');
-                  },
-                  activeColor: AppColors.taskCardYellow,
-                ),
-              ),
+              Obx(() => SettingOptionRow(
+                    title: 'Language',
+                    trailing: Switch(
+                      value: controller.isLanguageEn.value,
+                      onChanged: (bool value) {
+                        controller.toggleLanguage(value); 
+                      },
+                      activeColor: AppColors.taskCardYellow,
+                    ),
+                  )),
             ],
           ),
         ),
