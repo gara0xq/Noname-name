@@ -1,3 +1,5 @@
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/constants/app_colors.dart';
@@ -16,16 +18,13 @@ class AddChildScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.put(AddChildController());
-
     return Scaffold(
       backgroundColor: AppColors.beigeBackground,
       body: SafeArea(
         child: SingleChildScrollView(
           child: Container(
-            height:
-                MediaQuery.of(context).size.height -
-                MediaQuery.of(context).padding.top,
-            padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
+            height: Get.height - 50, 
+            padding: const EdgeInsets.symmetric(horizontal: 20),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
