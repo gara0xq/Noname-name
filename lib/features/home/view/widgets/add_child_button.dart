@@ -1,7 +1,8 @@
 import 'dart:developer';
-
 import 'package:flutter/material.dart';
+import 'package:get/get.dart';
 import '../../../../core/constants/app_colors.dart';
+import '../screens/add_child_screen.dart';
 
 class AddChildButton extends StatelessWidget {
   const AddChildButton({super.key});
@@ -14,6 +15,7 @@ class AddChildButton extends StatelessWidget {
       child: ElevatedButton(
         onPressed: () {
           log('Add Child Pressed');
+          Get.to(() =>  AddChildScreen(showSkipButton: false));
         },
         style: ElevatedButton.styleFrom(
           backgroundColor: AppColors.darkPrimary,
