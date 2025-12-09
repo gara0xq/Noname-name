@@ -43,7 +43,7 @@ class AddChildController extends GetxController {
     }
   }
 
-  Future<void> addChild({bool navigateToMain = false}) async {
+  Future<void> addChild({bool? navigateToMain}) async {
     if (formKey.currentState!.validate()) {
       if (selectedGender.value == null) {
         Get.snackbar(
@@ -91,11 +91,13 @@ class AddChildController extends GetxController {
             await homeController.onRefresh();
           }
 
-          if (navigateToMain) {
+          if (navigateToMain == true) {
             Get.offAllNamed("/main");
           } else {
             Get.back();
           }
+          
+          _clearForm();
         }
       } catch (e) {
         isLoading.value = false;
@@ -110,6 +112,12 @@ class AddChildController extends GetxController {
         );
       }
     }
+  }
+
+  void _clearForm() {
+    nameController.clear();
+    birthDateController.clear();
+    selectedGender.value = null;
   }
 
   @override
