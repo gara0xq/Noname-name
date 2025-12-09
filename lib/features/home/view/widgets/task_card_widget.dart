@@ -6,12 +6,12 @@ import '../../model/task_model.dart';
 
 class TaskCardWidget extends StatelessWidget {
   final TaskModel task;
-  final String childName;
+  final String? childName;
 
   const TaskCardWidget({
     super.key,
     required this.task,
-    required this.childName,
+    this.childName, 
   });
 
   Color _getStatusColor() {
@@ -37,6 +37,8 @@ class TaskCardWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final String displayChildName = task.childName ?? childName ?? '';
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
@@ -126,20 +128,22 @@ class TaskCardWidget extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 20),
-                    const Icon(Icons.person, color: Colors.white, size: 16),
-                    const SizedBox(width: 6),
-                    Expanded(
-                      child: Text(
-                        childName,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                          color: Colors.white,
+                    if (displayChildName.isNotEmpty) ...[
+                      const Icon(Icons.person, color: Colors.white, size: 16),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          displayChildName,
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            color: Colors.white,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 1,
-                        overflow: TextOverflow.ellipsis,
                       ),
-                    ),
+                    ],
                   ],
                 ),
               ],
