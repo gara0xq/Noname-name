@@ -19,17 +19,12 @@ class MainScreen extends StatelessWidget {
 
       return Scaffold(
         backgroundColor: AppColors.beigeBackground,
-        body: RefreshIndicator(
-          onRefresh: () async {
-            controller.onRefresh();
+        body: AnimatedSwitcher(
+          duration: const Duration(milliseconds: 200),
+          transitionBuilder: (child, animation) {
+            return FadeTransition(opacity: animation, child: child);
           },
-          child: AnimatedSwitcher(
-            duration: const Duration(milliseconds: 200),
-            transitionBuilder: (child, animation) {
-              return FadeTransition(opacity: animation, child: child);
-            },
-            child: currentPage,
-          ),
+          child: currentPage,
         ),
         bottomNavigationBar: const CustomBottomNavBar(),
       );

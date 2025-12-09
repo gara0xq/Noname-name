@@ -5,8 +5,6 @@ import '../model/user_model.dart';
 import '../model/child_model.dart';
 
 class HomeController extends GetxController {
-  static HomeController get instance => Get.find<HomeController>();
-
   final isLoading = true.obs;
   final userName = 'Loading...'.obs;
   final userEmail = 'Loading...'.obs;

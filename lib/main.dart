@@ -8,6 +8,7 @@ import 'features/auth/view/screens/signup_screen.dart';
 import 'features/auth/view/screens/splash_screen.dart';
 import 'features/auth/view/screens/welcome_screen.dart';
 import 'features/home/view/screens/main_screen.dart';
+import 'features/home/view/screens/add_child_screen.dart';
 
 void main() {
   FlutterNativeSplash.remove();
@@ -31,6 +32,7 @@ class MyApp extends StatelessWidget {
         GetPage(name: "/signup", page: () => SignupScreen()),
         GetPage(name: "/continue_signup", page: () => ContinueSignupScreen()),
         GetPage(name: "/main", page: () => MainScreen()),
+        GetPage(name: "/add_child", page: () => AddChildScreen()),
       ],
     );
   }
