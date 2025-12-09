@@ -7,18 +7,14 @@ class SplashScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    Get.put(SplashController());
-    return Scaffold(
-      body: Center(
-        child: Container(
-          width: 100,
-          height: 100,
-          decoration: BoxDecoration(
-            color: Colors.grey,
-            borderRadius: BorderRadius.circular(8),
-          ),
-        ),
-      ),
+    return GetBuilder<SplashController>(
+      init: SplashController(),
+      builder: (controller) {
+        return Scaffold(
+          backgroundColor: controller.backGroundColor,
+          body: SafeArea(child: Center(child: controller.getVideoBackground())),
+        );
+      },
     );
   }
 }

@@ -1,20 +1,15 @@
 import 'dart:developer';
-
-import 'package:aes256/aes256.dart';
 import 'package:get/get.dart';
-import 'package:shared_preferences/shared_preferences.dart';
-import '../../../core/constants/app_constants.dart';
 import '../../../core/services/dio_client.dart';
 import '../model/user_model.dart';
 import '../model/child_model.dart';
 
 class HomeController extends GetxController {
-  static HomeController get instance =>
-      Get.find<HomeController>(); // ✅ إضافة هذا السطر
+  static HomeController get instance => Get.find<HomeController>();
 
   final isLoading = true.obs;
   final userName = 'Loading...'.obs;
-  final userEmail = 'Loading...'.obs; // ✅ تأكد أن userEmail موجود
+  final userEmail = 'Loading...'.obs;
   final familyCode = 'Generating...'.obs;
   final childrenList = <ChildModel>[].obs;
 
@@ -25,12 +20,6 @@ class HomeController extends GetxController {
   }
 
   Future<void> fetchAllData() async {
-    final sharedPreferances = await SharedPreferences.getInstance();
-    AppConstants.AUTH_TOKEN = Aes256.decrypt(
-      encrypted: sharedPreferances.getString("token").toString(),
-      passphrase: AppConstants.HASHER_KEY,
-    ).toString();
-
     isLoading.value = true;
 
     await Future.wait([_fetchUserData(), _fetchChildrenList()]);
@@ -58,7 +47,7 @@ class HomeController extends GetxController {
       }
     } catch (e) {
       userName.value = 'Parent';
-      userEmail.value = 'parent@example.com'; // ✅ القيمة الافتراضية
+      userEmail.value = 'parent@example.com';
       familyCode.value = '123456';
       log('Error fetching user data: $e');
     }

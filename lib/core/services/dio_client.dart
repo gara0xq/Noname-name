@@ -6,6 +6,7 @@ class DioClient {
   bool hasToken;
   DioClient({this.hasToken = false}) {
     _dio.options = BaseOptions(
+      validateStatus: (status) => true,
       baseUrl: AppConstants.BASE_URL,
       headers: {
         'Content-Type': 'application/json',

@@ -42,12 +42,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
               const SizedBox(height: 10),
 
-              SettingOptionRow(
-                title: 'Change password',
-                onTap: () {
-                  print('Change password clicked');
-                },
-              ),
+              SettingOptionRow(title: 'Change password', onTap: () {}),
               const Divider(indent: 20, endIndent: 20, height: 1),
 
               SettingOptionRow(

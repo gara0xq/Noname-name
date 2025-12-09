@@ -32,7 +32,6 @@ class AuthController extends GetxController {
     if (loginKey.currentState!.validate()) {
       loadingAimation();
       try {
-        log({"email": lEmail.text, "password": lPassword.text}.toString());
         final response = await dioClient.post(
           uri: uri,
           data: {"email": lEmail.text, "password": lPassword.text},
@@ -46,6 +45,64 @@ class AuthController extends GetxController {
           await sharedPreferances.setString("token", token);
           loadingAimation(isStart: false);
           Get.offAllNamed("/main");
+        } else {
+          Get.snackbar(
+            'Error',
+            response.data["message"],
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+            duration: const Duration(seconds: 2),
+          );
+          loadingAimation(isStart: false);
+        }
+      } on Exception catch (e) {
+        log(e.toString());
+        loadingAimation(isStart: false);
+      }
+    } else {
+      loadingAimation(isStart: false);
+      Get.snackbar(
+        'Error',
+        'Invalid data',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+      );
+    }
+  }
+
+  Future<void> signup() async {
+    const String uri = '/user/parent/login';
+    final dioClient = DioClient();
+    loadingAimation();
+    if (continueSignupKey.currentState!.validate() &&
+        (sPassword.text == confirmPassword.text)) {
+      try {
+        final response = await dioClient.post(
+          uri: uri,
+          data: {
+            "name": "${firstName.text} ${lastName.text}",
+            "email": sEmail.text,
+            "password": sPassword.text,
+            "phone_number": phoneNumber.text,
+            "title": "parent",
+          },
+        );
+        if (response.statusCode == 201 && response.data != null) {
+          loadingAimation(isStart: false);
+          Get.offAllNamed("/login");
+        } else {
+          Get.snackbar(
+            'Error',
+            response.data["message"],
+            snackPosition: SnackPosition.BOTTOM,
+            backgroundColor: Colors.red,
+            colorText: Colors.white,
+            duration: const Duration(seconds: 2),
+          );
+          loadingAimation(isStart: false);
         }
       } on Exception catch (e) {
         log(e.toString());
