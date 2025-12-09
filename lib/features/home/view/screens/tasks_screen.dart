@@ -12,7 +12,7 @@ class TasksScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     Get.put(TasksController());
-    
+
     return Scaffold(
       backgroundColor: AppColors.beigeBackground,
       body: Column(
@@ -24,7 +24,7 @@ class TasksScreen extends StatelessWidget {
               child: const HomeTopBar(),
             ),
           ),
-          
+
           const TaskFilterWidget(),
 
           Expanded(
@@ -87,17 +87,20 @@ class TasksScreen extends StatelessWidget {
 
                 if (controller.filteredTasks.isEmpty) {
                   String emptyMessage = 'No tasks found';
-                  String emptySubtitle = 'Try changing the filter or create new tasks';
-                  
+                  String emptySubtitle =
+                      'Try changing the filter or create new tasks';
+
                   if (controller.currentFilter.value != null) {
                     switch (controller.currentFilter.value) {
                       case 'pending':
                         emptyMessage = 'No pending tasks';
-                        emptySubtitle = 'All tasks are either submitted, completed, expired, or declined';
+                        emptySubtitle =
+                            'All tasks are either submitted, completed, expired, or declined';
                         break;
                       case 'submitted':
                         emptyMessage = 'No submitted tasks';
-                        emptySubtitle = 'No tasks are waiting for your approval';
+                        emptySubtitle =
+                            'No tasks are waiting for your approval';
                         break;
                       case 'completed':
                         emptyMessage = 'No completed tasks';
@@ -122,9 +125,9 @@ class TasksScreen extends StatelessWidget {
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
                               Icon(
-                                controller.currentFilter.value != null 
-                                  ? Icons.filter_alt_outlined 
-                                  : Icons.task_alt_outlined,
+                                controller.currentFilter.value != null
+                                    ? Icons.filter_alt_outlined
+                                    : Icons.task_alt_outlined,
                                 size: 100,
                                 color: Colors.grey,
                               ),
@@ -139,7 +142,9 @@ class TasksScreen extends StatelessWidget {
                               ),
                               const SizedBox(height: 12),
                               Padding(
-                                padding: const EdgeInsets.symmetric(horizontal: 40),
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 40,
+                                ),
                                 child: Text(
                                   emptySubtitle,
                                   textAlign: TextAlign.center,
@@ -160,7 +165,10 @@ class TasksScreen extends StatelessWidget {
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
-                                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 14),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 30,
+                                      vertical: 14,
+                                    ),
                                   ),
                                   child: const Text(
                                     'Show All Tasks',
@@ -174,14 +182,17 @@ class TasksScreen extends StatelessWidget {
                               else
                                 ElevatedButton(
                                   onPressed: () {
-                                    Get.back();
+                                    Get.offAllNamed("/main");
                                   },
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppColors.darkPrimary,
                                     shape: RoundedRectangleBorder(
                                       borderRadius: BorderRadius.circular(12),
                                     ),
-                                    padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 14),
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 30,
+                                      vertical: 14,
+                                    ),
                                   ),
                                   child: const Text(
                                     'Go Back',
