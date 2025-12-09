@@ -40,8 +40,12 @@ dependencies:
   dio: ^5.9.0
   aes256: ^1.0.0
   flutter_svg: ^2.2.3
+  video_player: ^2.10.1
+  flutter_native_splash: ^2.4.7
+  
   auto_size_text: ^3.0.0
   share_plus: ^12.0.1
+  pin_code_fields: ^8.0.1
 
 dev_dependencies:
   flutter_test:
@@ -69,6 +73,7 @@ flutter:
   assets:
     - assets/images/
     - assets/icons/
+    - assets/videos/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

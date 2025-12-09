@@ -8,4 +8,6 @@ class AppConstants {
   static const String BEARER_PREFIX = 'Bearer ';
 
   static const String HASHER_KEY = "7mada";
+
+  static const String TOKEN_KEY = "token";
 }
