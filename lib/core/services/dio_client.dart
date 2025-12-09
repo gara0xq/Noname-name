@@ -4,6 +4,7 @@ import '../constants/app_constants.dart';
 class DioClient {
   final Dio _dio = Dio();
   bool hasToken;
+
   DioClient({this.hasToken = false}) {
     _dio.options = BaseOptions(
       baseUrl: AppConstants.BASE_URL,
@@ -28,6 +29,40 @@ class DioClient {
   Future<Response> post({required String uri, required dynamic data}) async {
     try {
       final Response response = await _dio.post(uri, data: data);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Response> put({required String uri, required dynamic data}) async {
+    try {
+      final Response response = await _dio.put(uri, data: data);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Response> delete({required String uri, dynamic data}) async {
+    try {
+      final Response response = await _dio.delete(uri, data: data);
+      return response;
+    } catch (e) {
+      rethrow;
+    }
+  }
+
+  Future<Response> getWithBody({
+    required String uri,
+    required dynamic data,
+  }) async {
+    try {
+      final Response response = await _dio.get(
+        uri,
+        data: data,
+        options: Options(headers: {'Content-Type': 'application/json'}),
+      );
       return response;
     } catch (e) {
       rethrow;

@@ -9,12 +9,10 @@ import '../model/user_model.dart';
 import '../model/child_model.dart';
 
 class HomeController extends GetxController {
-  static HomeController get instance =>
-      Get.find<HomeController>(); // ✅ إضافة هذا السطر
 
   final isLoading = true.obs;
   final userName = 'Loading...'.obs;
-  final userEmail = 'Loading...'.obs; // ✅ تأكد أن userEmail موجود
+  final userEmail = 'Loading...'.obs;
   final familyCode = 'Generating...'.obs;
   final childrenList = <ChildModel>[].obs;
 
@@ -58,7 +56,7 @@ class HomeController extends GetxController {
       }
     } catch (e) {
       userName.value = 'Parent';
-      userEmail.value = 'parent@example.com'; // ✅ القيمة الافتراضية
+      userEmail.value = 'parent@example.com';
       familyCode.value = '123456';
       log('Error fetching user data: $e');
     }

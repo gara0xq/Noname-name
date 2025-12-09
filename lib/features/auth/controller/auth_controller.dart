@@ -32,7 +32,6 @@ class AuthController extends GetxController {
     if (loginKey.currentState!.validate()) {
       loadingAimation();
       try {
-        log({"email": lEmail.text, "password": lPassword.text}.toString());
         final response = await dioClient.post(
           uri: uri,
           data: {"email": lEmail.text, "password": lPassword.text},
@@ -44,8 +43,18 @@ class AuthController extends GetxController {
           );
 
           await sharedPreferances.setString("token", token);
+          
+          AppConstants.AUTH_TOKEN = response.data["token"];
+          
+          final hasChildren = await _checkIfUserHasChildren();
+          
           loadingAimation(isStart: false);
-          Get.offAllNamed("/main");
+          
+          if (hasChildren) {
+            Get.offAllNamed("/main");
+          } else {
+            Get.offAllNamed("/add_child", arguments: {"showSkipButton": true});
+          }
         }
       } on Exception catch (e) {
         log(e.toString());
@@ -61,6 +70,24 @@ class AuthController extends GetxController {
         colorText: Colors.white,
         duration: const Duration(seconds: 2),
       );
+    }
+  }
+
+  Future<bool> _checkIfUserHasChildren() async {
+    const String uri = '/user/parent/getChildren';
+    final dioClient = DioClient(hasToken: true);
+    
+    try {
+      final response = await dioClient.get(uri: uri);
+      
+      if (response.statusCode == 200 && response.data != null) {
+        final List<dynamic>? childrenJson = response.data['children'];
+        return childrenJson != null && childrenJson.isNotEmpty;
+      }
+      return false;
+    } catch (e) {
+      log('Error checking children: $e');
+      return false;
     }
   }
 

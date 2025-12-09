@@ -24,6 +24,7 @@ class HomeScreen extends StatelessWidget {
               }
 
               return SingleChildScrollView(
+                physics: const AlwaysScrollableScrollPhysics(),
                 padding: const EdgeInsets.all(16),
                 child: Column(
                   children: [
@@ -45,6 +46,7 @@ class HomeScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 20),
                     const AddChildButton(),
+                  // const SizedBox(height: 500,)
                   ],
                 ),
               );
