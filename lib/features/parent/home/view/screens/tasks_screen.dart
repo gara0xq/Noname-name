@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:testss/core/constants/app_colors.dart';
+import 'package:testss/features/parent/home/view/screens/task_detail_screen.dart';
 import 'package:testss/features/parent/home/view/widgets/home_top_bar.dart';
 import 'package:testss/features/parent/home/view/widgets/task_filer_widget.dart';
 import '../../controller/tasks_controller.dart';
@@ -106,7 +107,7 @@ class TasksScreen extends StatelessWidget {
                         emptyMessage = 'No completed tasks';
                         emptySubtitle = 'No tasks have been approved yet';
                         break;
-                      case 'expired_declined':
+                      case 'expired_Declined':
                         emptyMessage = 'No expired or declined tasks';
                         emptySubtitle = 'Great! All tasks are active and valid';
                         break;
@@ -219,7 +220,15 @@ class TasksScreen extends StatelessWidget {
                     itemCount: controller.filteredTasks.length,
                     itemBuilder: (context, index) {
                       final task = controller.filteredTasks[index];
-                      return TaskCardWidget(task: task);
+                      return TaskCardWidget(
+                        task: task,
+                        onTap: () {
+                          Get.to(
+                            () => TaskDetailsScreen(taskId: task.id),
+                            transition: Transition.rightToLeft,
+                          );
+                        },
+                      );
                     },
                   ),
                 );

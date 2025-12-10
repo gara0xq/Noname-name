@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/services/dio_client.dart';
+import '../../../../core/services/tasks_service.dart';
 import '../model/child_model.dart';
 import '../model/task_model.dart';
 import 'home_controller.dart';
@@ -10,6 +11,7 @@ import 'home_controller.dart';
 class ChildDetailsController extends GetxController
     with GetSingleTickerProviderStateMixin {
   final ChildModel child;
+  final TasksService _tasksService = TasksService();
 
   ChildDetailsController({required this.child});
 
@@ -37,36 +39,18 @@ class ChildDetailsController extends GetxController
   Future<void> fetchChildTasks() async {
     isLoadingTasks.value = true;
 
-    const String uri = '/user/parent/getChildTasks';
-    final dioClient = DioClient(hasToken: true);
-
     try {
-      final response = await dioClient.getWithBody(
-        uri: uri,
-        data: {"childcode": child.code},
-      );
-
-      if (response.statusCode == 200) {
-        _processResponse(response.data);
-      } else {
-        _showErrorSnackbar('Failed to load tasks');
-      }
+      final tasks = await _tasksService.getChildTasks(child.code);
+      
+      tasksList.clear();
+      tasksList.addAll(tasks);
+      
+      print(' Child tasks loaded: ${tasks.length} tasks for ${child.name}');
     } catch (e) {
       _showErrorSnackbar('Failed to load tasks');
+      print(' Error fetching child tasks: $e');
     } finally {
       isLoadingTasks.value = false;
-    }
-  }
-
-  void _processResponse(dynamic data) {
-    if (data is Map && data.containsKey('task')) {
-      final List<dynamic> tasksJson = data['task'];
-
-      tasksList.clear();
-      final List<TaskModel> tasks = tasksJson
-          .map((taskMap) => TaskModel.fromJson(taskMap))
-          .toList();
-      tasksList.addAll(tasks);
     }
   }
 
@@ -110,26 +94,19 @@ class ChildDetailsController extends GetxController
     if (addTaskFormKey.currentState!.validate()) {
       isAddingTask.value = true;
 
-      const String uri = '/user/parent/add_task';
-      final dioClient = DioClient(hasToken: true);
-
       try {
-        final response = await dioClient.post(
-          uri: uri,
-          data: {
-            "title": titleController.text,
-            "description": descriptionController.text,
-            "points": int.parse(pointsController.text),
-            "code": child.code,
-            "punishment": punishmentController.text,
-            if (dateController.text.isNotEmpty)
-              "expire_date": dateController.text,
-          },
+        final success = await _tasksService.addTask(
+          title: titleController.text,
+          description: descriptionController.text,
+          points: int.parse(pointsController.text),
+          childCode: child.code,
+          punishment: punishmentController.text,
+          expireDate: dateController.text.isNotEmpty ? dateController.text : null,
         );
 
         isAddingTask.value = false;
 
-        if (response.statusCode == 200 || response.statusCode == 201) {
+        if (success) {
           titleController.clear();
           descriptionController.clear();
           pointsController.clear();
@@ -145,6 +122,7 @@ class ChildDetailsController extends GetxController
       } catch (e) {
         isAddingTask.value = false;
         _showErrorSnackbar('Failed to add task. Please try again.');
+        print(' Error adding task: $e');
       }
     }
   }
@@ -294,7 +272,7 @@ class ChildDetailsController extends GetxController
   void onClose() {
     tabController.dispose();
     titleController.dispose();
-    descriptionController.clear();
+    descriptionController.dispose();
     pointsController.dispose();
     dateController.dispose();
     punishmentController.dispose();

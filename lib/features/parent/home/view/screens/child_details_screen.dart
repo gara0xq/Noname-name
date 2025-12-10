@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:get/get.dart';
+import 'package:testss/features/parent/home/view/screens/task_detail_screen.dart';
 import 'package:testss/features/parent/home/view/widgets/home_top_bar.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../controller/child_details_controller.dart';
@@ -341,7 +342,16 @@ class ChildDetailsScreen extends StatelessWidget {
         itemCount: controller.tasksList.length,
         itemBuilder: (context, index) {
           final task = controller.tasksList[index];
-          return TaskCardWidget(task: task, childName: child.name);
+          return TaskCardWidget(
+            task: task,
+            childName: child.name,
+            onTap: () {
+              Get.to(
+                () => TaskDetailsScreen(taskId: task.id),
+                transition: Transition.rightToLeft,
+              );
+            },
+          );
         },
       );
     });
