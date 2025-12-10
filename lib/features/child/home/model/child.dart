@@ -9,7 +9,7 @@ class Child {
   final int expiredTask;
   final int submittedTask;
   final int declinedTask;
-  final int progress;
+  final double progress;
 
   Child({
     required this.name,
