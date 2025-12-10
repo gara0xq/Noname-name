@@ -12,6 +12,7 @@ class ContinueSignupScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.beigeBackground,
       body: SingleChildScrollView(
         child: Container(
           height: Get.height,
@@ -66,6 +67,7 @@ class ContinueSignupScreen extends StatelessWidget {
                       title: "Password",
                       controller: controller.sPassword,
                       hint: "********",
+                      obscureText: true,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Phone number is required';
@@ -77,6 +79,7 @@ class ContinueSignupScreen extends StatelessWidget {
                       title: "Confirm Password",
                       controller: controller.confirmPassword,
                       hint: "********",
+                      obscureText: true,
                       validator: (value) {
                         if (value == null || value.isEmpty) {
                           return 'Phone number is required';
@@ -100,6 +103,7 @@ class ContinueSignupScreen extends StatelessWidget {
                       child: Container(
                         height: 40,
                         width: 40,
+                        padding: EdgeInsets.only(left: 10),
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                           color: AppColors.darkPrimary,
@@ -108,27 +112,42 @@ class ContinueSignupScreen extends StatelessWidget {
                         child: Icon(
                           Icons.arrow_back_ios,
                           color: AppColors.beigeBackground,
+                          size: 20,
                         ),
                       ),
                     ),
                     Expanded(
-                      child: InkWell(
-                        onTap: () {},
-                        child: Container(
-                          height: 40,
-                          alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: AppColors.darkPrimary,
-                            borderRadius: BorderRadius.circular(8),
-                          ),
-                          child: Text(
-                            "Continue",
-                            style: TextStyle(
-                              color: AppColors.beigeBackground,
-                              fontWeight: FontWeight.bold,
-                              fontSize: 20,
-                            ),
-                          ),
+                      child: Center(
+                        child: GetBuilder<AuthController>(
+                          builder: (_) {
+                            return InkWell(
+                              onTap: () {
+                                controller.signup();
+                              },
+                              child: AnimatedContainer(
+                                duration: Duration(milliseconds: 200),
+                                height: 40,
+                                width: controller.buttonWidth,
+                                alignment: Alignment.center,
+                                decoration: BoxDecoration(
+                                  color: AppColors.darkPrimary,
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: controller.isLoading
+                                    ? CircularProgressIndicator(
+                                        color: AppColors.beigeBackground,
+                                      )
+                                    : Text(
+                                        "Continue",
+                                        style: TextStyle(
+                                          color: AppColors.beigeBackground,
+                                          fontWeight: FontWeight.bold,
+                                          fontSize: 20,
+                                        ),
+                                      ),
+                              ),
+                            );
+                          },
                         ),
                       ),
                     ),

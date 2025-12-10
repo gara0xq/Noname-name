@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
-import '../../../../../core/constants/app_colors.dart';
+import '../../../../../../../../core/constants/app_colors.dart';
 import '../../model/task_model.dart';
 
 class TaskCardWidget extends StatelessWidget {

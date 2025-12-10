@@ -45,6 +45,7 @@ class AuthController extends GetxController {
           await sharedPreferances.setString("token", token);
 
           AppConstants.AUTH_TOKEN = response.data["token"];
+          AppConstants.USER_TYPE = "parent";
 
           final hasChildren = await _checkIfUserHasChildren();
 
@@ -55,6 +56,47 @@ class AuthController extends GetxController {
             Get.offAllNamed("/add_child", arguments: {"showSkipButton": true});
           }
         }
+      } on Exception catch (e) {
+        log(e.toString());
+        loadingAimation(isStart: false);
+      }
+    } else {
+      loadingAimation(isStart: false);
+      Get.snackbar(
+        'Error',
+        'Invalid data',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: Colors.red,
+        colorText: Colors.white,
+        duration: const Duration(seconds: 2),
+      );
+    }
+  }
+
+  Future<void> signup() async {
+    const String uri = '/user/parent/register';
+    final dioClient = DioClient();
+
+    if (signupKey.currentState!.validate() &&
+        sPassword.text == confirmPassword.text) {
+      loadingAimation();
+
+      try {
+        final response = await dioClient.post(
+          uri: uri,
+          data: {
+            "name": "${firstName.text} ${lastName.text}",
+            "email": sEmail.text,
+            "password": sPassword.text,
+            "phone_number": phoneNumber.text,
+            if (familyCode.text.isNotEmpty) "family_code": familyCode.text,
+          },
+        );
+
+        if (response.statusCode == 201 && response.data != null) {
+          Get.offAllNamed("/login");
+        }
+        loadingAimation(isStart: false);
       } on Exception catch (e) {
         log(e.toString());
         loadingAimation(isStart: false);
