@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import '../../../../../core/constants/app_colors.dart';
+import '../../../../core/constants/app_colors.dart';
 import '../widget/card_welcome.dart';
 
 class WelcomeScreen extends StatelessWidget {
@@ -44,7 +44,9 @@ class WelcomeScreen extends StatelessWidget {
             ),
             SizedBox(height: 10),
             InkWell(
-              onTap: () {},
+              onTap: () {
+                Get.toNamed("/child_login");
+              },
               child: CardWelcome(
                 imge: "assets/images/child.png",
                 name: "Child",

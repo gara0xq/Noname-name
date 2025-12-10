@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:video_player/video_player.dart';
 
-import '../../../../core/constants/app_constants.dart';
+import '../../../core/constants/app_constants.dart';
 
 class SplashController extends GetxController {
   VideoPlayerController? _controller;
@@ -38,7 +38,11 @@ class SplashController extends GetxController {
             encrypted: token,
             passphrase: AppConstants.HASHER_KEY,
           ).toString();
-          Get.offAllNamed("/main");
+          if (AppConstants.USER_TYPE == "parent") {
+            Get.offAllNamed("/main");
+          } else {
+            Get.offAllNamed("/child_main");
+          }
         }
       });
     });

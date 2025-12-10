@@ -12,6 +12,7 @@ class SignupScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: AppColors.beigeBackground,
       body: SingleChildScrollView(
         child: Container(
           height: Get.height,
@@ -150,7 +151,9 @@ class SignupScreen extends StatelessWidget {
               SizedBox(height: 10),
               InkWell(
                 onTap: () {
-                  Get.toNamed("/continue_signup");
+                  if (controller.signupKey.currentState!.validate()) {
+                    Get.toNamed("/continue_signup");
+                  }
                 },
                 child: Align(
                   alignment: Alignment.center,
