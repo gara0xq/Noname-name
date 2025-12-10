@@ -44,7 +44,7 @@ class HomeController extends GetxController {
       
       if (response.statusCode == 200 && response.data != null) {
         child = Child.fromJson(response.data["child"]);
-        update();
+        update(); 
         log(' Child data updated - Points: ${child.points}');
       }
     } catch (e) {
@@ -77,11 +77,14 @@ class HomeController extends GetxController {
           _calculateStats();
 
           _resetToAllTasks();
+          
+          log(' Loaded ${tasks.length} tasks successfully');
         }
       }
     } catch (e) {
       hasError.value = true;
       errorMessage.value = 'Failed to load tasks: $e';
+      log(' Error fetching tasks: $e');
     } finally {
       isLoading.value = false;
     }
@@ -105,15 +108,19 @@ class HomeController extends GetxController {
         .length;
 
     totalCount.value = allTasks.length;
+    
+    log(' Stats - Total: $totalCount, Pending: $pendingCount, Submitted: $submittedCount, Completed: $completedCount, Expired/Declined: $expiredDeclinedCount');
   }
 
   void _resetToAllTasks() {
     filteredTasks.value = List<TaskModel>.from(allTasks);
     currentFilter.value = null;
     update();
+    log(' Reset to show all tasks: ${filteredTasks.length} tasks');
   }
 
   void applyFilter(String? filterType) {
+    
     currentFilter.value = filterType;
 
     if (filterType == null) {
@@ -126,26 +133,28 @@ class HomeController extends GetxController {
         filteredTasks.value = allTasks
             .where((task) => task.status == 'pending' && !task.isExpired)
             .toList();
+        log(' Showing PENDING tasks: ${filteredTasks.length} tasks');
         break;
 
       case 'submitted':
         filteredTasks.value = allTasks
             .where((task) => task.status == 'submitted')
             .toList();
-        print('📋 Showing SUBMITTED tasks: ${filteredTasks.length} tasks');
+        log(' Showing SUBMITTED tasks: ${filteredTasks.length} tasks');
         break;
 
       case 'completed':
         filteredTasks.value = allTasks
             .where((task) => task.status == 'completed')
             .toList();
+        log(' Showing COMPLETED tasks: ${filteredTasks.length} tasks');
         break;
 
       case 'expired_Declined':
         filteredTasks.value = allTasks
             .where((task) => task.status == 'Declined' || task.isExpired)
             .toList();
-
+        log(' Showing EXPIRED/DECLINED tasks: ${filteredTasks.length} tasks');
         break;
     }
 
