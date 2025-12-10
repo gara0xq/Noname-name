@@ -40,12 +40,15 @@ class HomeController extends GetxController {
 
     try {
       final response = await dioClient.get(uri: uri);
-      log(response.data.toString());
+      log(' Child Data Response: ${response.data}');
+      
       if (response.statusCode == 200 && response.data != null) {
         child = Child.fromJson(response.data["child"]);
+        update();
+        log(' Child data updated - Points: ${child.points}');
       }
     } catch (e) {
-      log(e.toString());
+      log(' Error fetching child data: $e');
     }
   }
 
@@ -129,7 +132,7 @@ class HomeController extends GetxController {
         filteredTasks.value = allTasks
             .where((task) => task.status == 'submitted')
             .toList();
-        print(' Showing SUBMITTED tasks: ${filteredTasks.length} tasks');
+        print('📋 Showing SUBMITTED tasks: ${filteredTasks.length} tasks');
         break;
 
       case 'completed':

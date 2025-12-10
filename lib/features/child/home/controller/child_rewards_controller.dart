@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import '../../../../core/services/dio_client.dart';
 import '../model/reward_model.dart';
+import './home_controller.dart';
 
 class ChildRewardsController extends GetxController {
   final rewardsList = <RewardModel>[].obs;
   final isLoading = true.obs;
   final hasError = false.obs;
   final errorMessage = ''.obs;
+  final isRedeeming = false.obs;
 
   @override
   void onInit() {
@@ -54,6 +56,10 @@ class ChildRewardsController extends GetxController {
   }
 
   Future<void> redeemReward(String rewardId) async {
+    if (isRedeeming.value) return;
+    
+    isRedeeming.value = true;
+    
     final String uri = '/user/child/redeemedReward/$rewardId';
     final dioClient = DioClient(hasToken: true);
 
@@ -72,8 +78,15 @@ class ChildRewardsController extends GetxController {
           duration: const Duration(seconds: 2),
         );
 
-        // Refresh rewards list
+        // Refresh rewards list to update status
         await fetchRewards();
+        
+        // Refresh child data to update points
+        if (Get.isRegistered<HomeController>()) {
+          final homeController = Get.find<HomeController>();
+          await homeController.fetchChildData();
+          log('🔄 Child points refreshed');
+        }
       }
     } catch (e) {
       log(' Error redeeming reward: $e');
@@ -85,10 +98,18 @@ class ChildRewardsController extends GetxController {
         colorText: Colors.white,
         duration: const Duration(seconds: 2),
       );
+    } finally {
+      isRedeeming.value = false;
     }
   }
 
   Future<void> refreshRewards() async {
     await fetchRewards();
+    
+    // Also refresh child data
+    if (Get.isRegistered<HomeController>()) {
+      final homeController = Get.find<HomeController>();
+      await homeController.fetchChildData();
+    }
   }
 }

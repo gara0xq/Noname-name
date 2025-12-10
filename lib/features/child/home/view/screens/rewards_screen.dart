@@ -208,170 +208,18 @@ class RewardsScreen extends StatelessWidget {
                   crossAxisCount: 2,
                   crossAxisSpacing: 16,
                   mainAxisSpacing: 16,
-                  childAspectRatio: 0.85,
+                  childAspectRatio: 0.75,
                 ),
                 itemCount: rewardsController.rewardsList.length,
                 itemBuilder: (context, index) {
                   final reward = rewardsController.rewardsList[index];
                   final canRedeem = homeController.child.points >= reward.points;
 
-                  return InkWell(
-                    onTap: () {
-                      if (canRedeem && !reward.isRedeemed) {
-                        _showRedeemDialog(
-                          context,
-                          reward.id,
-                          reward.title,
-                          reward.points,
-                          rewardsController,
-                        );
-                      }
-                    },
-                    borderRadius: BorderRadius.circular(16),
-                    child: Container(
-                      decoration: BoxDecoration(
-                        color: reward.isRedeemed
-                            ? Colors.grey[300]
-                            : canRedeem
-                                ? AppColors.taskCardYellow
-                                : Colors.white,
-                        borderRadius: BorderRadius.circular(16),
-                        border: Border.all(
-                          color: reward.isRedeemed
-                              ? Colors.grey
-                              : canRedeem
-                                  ? AppColors.taskCardYellow
-                                  : Colors.grey[300]!,
-                          width: 2,
-                        ),
-                        boxShadow: [
-                          BoxShadow(
-                            color: Colors.black.withOpacity(0.05),
-                            blurRadius: 8,
-                            offset: const Offset(0, 2),
-                          ),
-                        ],
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          // Image Container
-                          Expanded(
-                            child: Container(
-                              width: double.infinity,
-                              decoration: BoxDecoration(
-                                color: reward.isRedeemed
-                                    ? Colors.grey[400]
-                                    : canRedeem
-                                        ? Colors.white.withOpacity(0.3)
-                                        : Colors.grey[200],
-                                borderRadius: const BorderRadius.only(
-                                  topLeft: Radius.circular(14),
-                                  topRight: Radius.circular(14),
-                                ),
-                              ),
-                              child: Stack(
-                                children: [
-                                  Center(
-                                    child: Icon(
-                                      Icons.card_giftcard,
-                                      size: 60,
-                                      color: reward.isRedeemed
-                                          ? Colors.grey[600]
-                                          : canRedeem
-                                              ? Colors.white
-                                              : Colors.grey[400],
-                                    ),
-                                  ),
-                                  if (reward.isRedeemed)
-                                    Positioned.fill(
-                                      child: Container(
-                                        decoration: BoxDecoration(
-                                          color: Colors.black.withOpacity(0.5),
-                                          borderRadius: const BorderRadius.only(
-                                            topLeft: Radius.circular(14),
-                                            topRight: Radius.circular(14),
-                                          ),
-                                        ),
-                                        child: const Center(
-                                          child: Icon(
-                                            Icons.check_circle,
-                                            size: 40,
-                                            color: Colors.white,
-                                          ),
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                            ),
-                          ),
-
-                          // Info Container
-                          Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  reward.title,
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.bold,
-                                    color: reward.isRedeemed
-                                        ? Colors.grey[700]
-                                        : canRedeem
-                                            ? Colors.white
-                                            : Colors.grey[700],
-                                  ),
-                                  maxLines: 1,
-                                  overflow: TextOverflow.ellipsis,
-                                ),
-                                const SizedBox(height: 8),
-                                Row(
-                                  children: [
-                                    Container(
-                                      padding: const EdgeInsets.all(4),
-                                      decoration: BoxDecoration(
-                                        color: reward.isRedeemed
-                                            ? Colors.grey[500]
-                                            : canRedeem
-                                                ? Colors.white
-                                                : AppColors.primaryGreen,
-                                        shape: BoxShape.circle,
-                                      ),
-                                      child: SvgPicture.asset(
-                                        "assets/icons/star.svg",
-                                        width: 14,
-                                        height: 14,
-                                        color: reward.isRedeemed
-                                            ? Colors.white
-                                            : canRedeem
-                                                ? AppColors.taskCardYellow
-                                                : Colors.white,
-                                      ),
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      '${reward.points}',
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: reward.isRedeemed
-                                            ? Colors.grey[700]
-                                            : canRedeem
-                                                ? Colors.white
-                                                : Colors.grey[700],
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ],
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
+                  return _buildRewardCard(
+                    context,
+                    reward,
+                    canRedeem,
+                    rewardsController,
                   );
                 },
               ),
@@ -379,6 +227,317 @@ class RewardsScreen extends StatelessWidget {
           ),
         );
       }),
+    );
+  }
+
+  Widget _buildRewardCard(
+    BuildContext context,
+    reward,
+    bool canRedeem,
+    ChildRewardsController controller,
+  ) {
+    return InkWell(
+      onTap: () {
+        if (reward.imageUrl != null && reward.imageUrl!.isNotEmpty) {
+          _showImageDialog(context, reward.imageUrl!);
+        }
+      },
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        decoration: BoxDecoration(
+          color: reward.isRedeemed
+              ? Colors.grey[300]
+              : canRedeem
+                  ? AppColors.taskCardYellow
+                  : Colors.white,
+          borderRadius: BorderRadius.circular(16),
+          border: Border.all(
+            color: reward.isRedeemed
+                ? Colors.grey
+                : canRedeem
+                    ? AppColors.taskCardYellow
+                    : Colors.grey[300]!,
+            width: 2,
+          ),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.05),
+              blurRadius: 8,
+              offset: const Offset(0, 2),
+            ),
+          ],
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            // Image Container with Badge
+            Expanded(
+              flex: 3,
+              child: Stack(
+                children: [
+                  Container(
+                    width: double.infinity,
+                    decoration: BoxDecoration(
+                      color: reward.isRedeemed
+                          ? Colors.grey[400]
+                          : canRedeem
+                              ? Colors.white.withOpacity(0.3)
+                              : Colors.grey[200],
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(14),
+                        topRight: Radius.circular(14),
+                      ),
+                    ),
+                    child: ClipRRect(
+                      borderRadius: const BorderRadius.only(
+                        topLeft: Radius.circular(14),
+                        topRight: Radius.circular(14),
+                      ),
+                      child: reward.imageUrl != null && reward.imageUrl!.isNotEmpty
+                          ? Image.network(
+                              reward.imageUrl!,
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Center(
+                                  child: Icon(
+                                    Icons.card_giftcard,
+                                    size: 50,
+                                    color: reward.isRedeemed
+                                        ? Colors.grey[600]
+                                        : canRedeem
+                                            ? Colors.white
+                                            : Colors.grey[400],
+                                  ),
+                                );
+                              },
+                            )
+                          : Center(
+                              child: Icon(
+                                Icons.card_giftcard,
+                                size: 50,
+                                color: reward.isRedeemed
+                                    ? Colors.grey[600]
+                                    : canRedeem
+                                        ? Colors.white
+                                        : Colors.grey[400],
+                              ),
+                            ),
+                    ),
+                  ),
+                  
+                  // Status Badge
+                  Positioned(
+                    top: 8,
+                    right: 8,
+                    child: Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 8,
+                        vertical: 4,
+                      ),
+                      decoration: BoxDecoration(
+                        color: reward.isRedeemed 
+                            ? Colors.green 
+                            : Colors.orange,
+                        borderRadius: BorderRadius.circular(12),
+                        boxShadow: [
+                          BoxShadow(
+                            color: Colors.black.withOpacity(0.2),
+                            blurRadius: 4,
+                            offset: const Offset(0, 2),
+                          ),
+                        ],
+                      ),
+                      child: Text(
+                        reward.isRedeemed ? 'Redeemed' : 'Not Redeemed',
+                        style: const TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ),
+
+                  // Redeemed Overlay
+                  if (reward.isRedeemed)
+                    Positioned.fill(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.black.withOpacity(0.4),
+                          borderRadius: const BorderRadius.only(
+                            topLeft: Radius.circular(14),
+                            topRight: Radius.circular(14),
+                          ),
+                        ),
+                        child: const Center(
+                          child: Icon(
+                            Icons.check_circle,
+                            size: 40,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+
+            // Info Container
+            Expanded(
+              flex: 2,
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      reward.title,
+                      style: TextStyle(
+                        fontSize: 15,
+                        fontWeight: FontWeight.bold,
+                        color: reward.isRedeemed
+                            ? Colors.grey[700]
+                            : canRedeem
+                                ? Colors.white
+                                : Colors.grey[700],
+                      ),
+                      maxLines: 2,
+                      overflow: TextOverflow.ellipsis,
+                    ),
+                    
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Row(
+                          children: [
+                            Container(
+                              padding: const EdgeInsets.all(4),
+                              decoration: BoxDecoration(
+                                color: reward.isRedeemed
+                                    ? Colors.grey[500]
+                                    : canRedeem
+                                        ? Colors.white
+                                        : AppColors.primaryGreen,
+                                shape: BoxShape.circle,
+                              ),
+                              child: SvgPicture.asset(
+                                "assets/icons/star.svg",
+                                width: 12,
+                                height: 12,
+                                color: reward.isRedeemed
+                                    ? Colors.white
+                                    : canRedeem
+                                        ? AppColors.taskCardYellow
+                                        : Colors.white,
+                              ),
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              '${reward.points}',
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.bold,
+                                color: reward.isRedeemed
+                                    ? Colors.grey[700]
+                                    : canRedeem
+                                        ? Colors.white
+                                        : Colors.grey[700],
+                              ),
+                            ),
+                          ],
+                        ),
+                        
+                        // Redeem Button
+                        if (!reward.isRedeemed && canRedeem)
+                          InkWell(
+                            onTap: () {
+                              _showRedeemDialog(
+                                context,
+                                reward.id,
+                                reward.title,
+                                reward.points,
+                                controller,
+                              );
+                            },
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 8,
+                                vertical: 4,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                              child: const Text(
+                                'Redeem',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppColors.taskCardYellow,
+                                ),
+                              ),
+                            ),
+                          ),
+                      ],
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showImageDialog(BuildContext context, String imageUrl) {
+    showDialog(
+      context: context,
+      builder: (context) => Dialog(
+        backgroundColor: Colors.transparent,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Container(
+              constraints: BoxConstraints(
+                maxHeight: MediaQuery.of(context).size.height * 0.7,
+                maxWidth: MediaQuery.of(context).size.width * 0.9,
+              ),
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                color: Colors.white,
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(20),
+                child: Image.network(
+                  imageUrl,
+                  fit: BoxFit.contain,
+                  errorBuilder: (context, error, stackTrace) {
+                    return const Padding(
+                      padding: EdgeInsets.all(40),
+                      child: Icon(
+                        Icons.broken_image,
+                        size: 100,
+                        color: Colors.grey,
+                      ),
+                    );
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 16),
+            IconButton(
+              onPressed: () => Navigator.pop(context),
+              icon: const Icon(
+                Icons.close,
+                color: Colors.white,
+                size: 32,
+              ),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
