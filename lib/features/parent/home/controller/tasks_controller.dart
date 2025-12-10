@@ -1,11 +1,14 @@
+// lib/features/parent/home/controller/tasks_controller.dart
+
 import 'dart:async';
 import 'package:get/get.dart';
-import '../../../../core/services/dio_client.dart';
+import '../../../../core/services/tasks_service.dart';
 import '../model/task_model.dart';
 
 class TasksController extends GetxController {
-  final allTasks = <TaskModel>[].obs;
+  final TasksService _tasksService = TasksService();
 
+  final allTasks = <TaskModel>[].obs;
   final filteredTasks = <TaskModel>[].obs;
 
   final isLoading = false.obs;
@@ -31,34 +34,19 @@ class TasksController extends GetxController {
     hasError.value = false;
     errorMessage.value = '';
 
-    const String uri = '/user/parent/getTasks';
-    final dioClient = DioClient(hasToken: true);
-
     try {
-      final response = await dioClient.get(uri: uri);
+      final tasks = await _tasksService.getAllTasks();
 
-      if (response.statusCode == 200 && response.data != null) {
-        final Map<String, dynamic> responseData = response.data;
+      allTasks.clear();
+      allTasks.addAll(tasks);
 
-        if (responseData.containsKey('tasks')) {
-          final List<dynamic> tasksJson = responseData['tasks'];
+      _calculateStats();
+      _resetToAllTasks();
 
-          allTasks.clear();
-          final List<TaskModel> tasks = tasksJson
-              .map((taskMap) => TaskModel.fromJson(taskMap))
-              .toList();
-          allTasks.addAll(tasks);
-
-          _calculateStats();
-
-          _resetToAllTasks();
-
-          print(' All tasks loaded: ${tasks.length} tasks');
-          print(
-            ' Stats - Total: $totalCount, Pending: $pendingCount, Submitted: $submittedCount, Completed: $completedCount, Expired/Declined: $expiredDeclinedCount',
-          );
-        }
-      }
+      print(' All tasks loaded: ${tasks.length} tasks');
+      print(
+        ' Stats - Total: $totalCount, Pending: $pendingCount, Submitted: $submittedCount, Completed: $completedCount, Expired/Declined: $expiredDeclinedCount',
+      );
     } catch (e) {
       hasError.value = true;
       errorMessage.value = 'Failed to load tasks: $e';
@@ -92,7 +80,7 @@ class TasksController extends GetxController {
     filteredTasks.value = List<TaskModel>.from(allTasks);
     currentFilter.value = null;
     update();
-    print(' Reset to ALL tasks: ${filteredTasks.length} tasks');
+    print('🔄 Reset to ALL tasks: ${filteredTasks.length} tasks');
   }
 
   void applyFilter(String? filterType) {
@@ -108,7 +96,7 @@ class TasksController extends GetxController {
         filteredTasks.value = allTasks
             .where((task) => task.status == 'pending' && !task.isExpired)
             .toList();
-        print('🔄 Showing PENDING tasks: ${filteredTasks.length} tasks');
+        print(' Showing PENDING tasks: ${filteredTasks.length} tasks');
         break;
 
       case 'submitted':
