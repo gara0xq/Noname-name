@@ -4,7 +4,6 @@ import 'package:get/get.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../controller/home_controller.dart';
 import '../widget/task_card_widget.dart';
-import '../widget/task_filer_widget.dart';
 
 class TasksScreen extends StatelessWidget {
   const TasksScreen({super.key});
