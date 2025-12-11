@@ -41,10 +41,11 @@ class HomeController extends GetxController {
     try {
       final response = await dioClient.get(uri: uri);
       log(' Child Data Response: ${response.data}');
-      
+
       if (response.statusCode == 200 && response.data != null) {
         child = Child.fromJson(response.data["child"]);
-        update(); 
+
+        update();
         log(' Child data updated - Points: ${child.points}');
       }
     } catch (e) {
@@ -77,7 +78,7 @@ class HomeController extends GetxController {
           _calculateStats();
 
           _resetToAllTasks();
-          
+
           log(' Loaded ${tasks.length} tasks successfully');
         }
       }
@@ -108,8 +109,10 @@ class HomeController extends GetxController {
         .length;
 
     totalCount.value = allTasks.length;
-    
-    log(' Stats - Total: $totalCount, Pending: $pendingCount, Submitted: $submittedCount, Completed: $completedCount, Expired/Declined: $expiredDeclinedCount');
+
+    log(
+      ' Stats - Total: $totalCount, Pending: $pendingCount, Submitted: $submittedCount, Completed: $completedCount, Expired/Declined: $expiredDeclinedCount',
+    );
   }
 
   void _resetToAllTasks() {
@@ -120,7 +123,6 @@ class HomeController extends GetxController {
   }
 
   void applyFilter(String? filterType) {
-    
     currentFilter.value = filterType;
 
     if (filterType == null) {

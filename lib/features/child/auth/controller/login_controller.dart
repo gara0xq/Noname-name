@@ -34,6 +34,7 @@ class LoginController extends GetxController {
 
         AppConstants.AUTH_TOKEN = response.data["token"];
         AppConstants.USER_TYPE = "child";
+        await sharedPreferances.setString("user-type", AppConstants.USER_TYPE);
 
         loadingAimation(isStart: false);
 

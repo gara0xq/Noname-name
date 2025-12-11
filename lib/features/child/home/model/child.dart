@@ -28,7 +28,7 @@ class Child {
   factory Child.fromJson(Map<String, dynamic> json) {
     return Child(
       name: json['name'] ?? '',
-      code: json['code'] ?? '',
+      code: json['code']?.toString() ?? '', // ✅ Convert to String
       gender: json['gender'] ?? '',
       birthDate: DateTime.parse(json['birth_date']),
       points: json['points'] ?? 0,
@@ -37,7 +37,7 @@ class Child {
       expiredTask: json['expiredTask'] ?? 0,
       submittedTask: json['submittedTask'] ?? 0,
       declinedTask: json['declinedTask'] ?? 0,
-      progress: json['progress'] ?? 0,
+      progress: (json['progress'] ?? 0).toDouble(), // ✅ Ensure double
     );
   }
 

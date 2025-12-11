@@ -30,21 +30,20 @@ class SplashController extends GetxController {
 
       final sharedPreferances = await SharedPreferences.getInstance();
       final token = sharedPreferances.getString(AppConstants.TOKEN_KEY);
-      AppConstants.USER_TYPE =
-          sharedPreferances.getString("user-type") ?? "parent";
-
+      AppConstants.USER_TYPE = sharedPreferances.getString("user-type") ?? "NA";
       Future.delayed(Duration(seconds: 5), () async {
-        if (token == null) {
+        if (token == null || AppConstants.USER_TYPE == "NA") {
           Get.offAllNamed("/welcome");
         } else {
           AppConstants.AUTH_TOKEN = Aes256.decrypt(
             encrypted: token,
             passphrase: AppConstants.HASHER_KEY,
           ).toString();
+          log(AppConstants.AUTH_TOKEN);
           log(AppConstants.USER_TYPE);
           if (AppConstants.USER_TYPE == "parent") {
             Get.offAllNamed("/main");
-          } else {
+          } else if (AppConstants.USER_TYPE == "child") {
             Get.offAllNamed("/child_main");
           }
         }
