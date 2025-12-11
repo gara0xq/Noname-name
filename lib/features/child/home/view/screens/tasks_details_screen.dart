@@ -2,9 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 import 'package:intl/intl.dart';
+import 'package:testss/features/child/home/controller/task_details_controller.dart';
 
 import '../../../../../core/constants/app_colors.dart';
-import '../../controller/home_controller.dart';
 import '../../model/task_model.dart';
 
 class TaskDetailsScreen extends StatelessWidget {
@@ -14,7 +14,7 @@ class TaskDetailsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // final controller = Get.find<HomeController>();
+    final controller = Get.put(ChildTaskDetailsController(task: task));
 
     return Scaffold(
       backgroundColor: AppColors.beigeBackground,
@@ -43,6 +43,9 @@ class TaskDetailsScreen extends StatelessWidget {
               ),
             ),
           ),
+
+          // Action button at the bottom
+          _buildActionButton(task, controller),
         ],
       ),
     );
@@ -471,73 +474,123 @@ class TaskDetailsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSubmittedTimeSection(task) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        const Text(
-          'Submitted Time',
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: AppColors.darkPrimary,
-          ),
+  Widget _buildActionButton(TaskModel task, ChildTaskDetailsController controller) {
+    // Only show submit button if task is pending and not expired
+    if (task.status.toLowerCase() == 'pending' && !task.isExpired) {
+      return Container(
+        padding: const EdgeInsets.all(20),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+              offset: const Offset(0, -5),
+            ),
+          ],
         ),
-        const SizedBox(height: 12),
-        Container(
-          width: double.infinity,
-          padding: const EdgeInsets.all(16),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-            boxShadow: [
-              BoxShadow(
-                color: Colors.black.withOpacity(0.05),
-                blurRadius: 8,
-                offset: const Offset(0, 2),
-              ),
-            ],
-          ),
-          child: Row(
-            children: [
-              Container(
-                padding: const EdgeInsets.all(8),
-                decoration: BoxDecoration(
-                  color: AppColors.primaryGreen.withOpacity(0.1),
-                  shape: BoxShape.circle,
+        child: SafeArea(
+          top: false,
+          child: Obx(
+            () => SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: controller.isSubmitting.value
+                    ? null
+                    : controller.showSubmitConfirmation,
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: AppColors.darkPrimary,
+                  padding: const EdgeInsets.symmetric(vertical: 16),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12),
+                  ),
                 ),
-                child: const Icon(
-                  Icons.access_time,
-                  size: 20,
-                  color: AppColors.primaryGreen,
-                ),
-              ),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const Text(
-                      'Submission Time',
-                      style: TextStyle(fontSize: 14, color: Colors.grey),
-                    ),
-                    const SizedBox(height: 4),
-                    Text(
-                      _formatDateTime(task.submittedAt),
-                      style: const TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w600,
-                        color: AppColors.darkPrimary,
+                child: controller.isSubmitting.value
+                    ? const SizedBox(
+                        height: 20,
+                        width: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(
+                            Colors.white,
+                          ),
+                        ),
+                      )
+                    : const Row(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.upload_file, size: 20),
+                          SizedBox(width: 8),
+                          Text(
+                            'Submit Task',
+                            style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
               ),
-            ],
+            ),
           ),
         ),
-      ],
+      );
+    }
+
+    // For other statuses, show info message
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.1),
+            blurRadius: 10,
+            offset: const Offset(0, -5),
+          ),
+        ],
+      ),
+      child: SafeArea(
+        top: false,
+        child: Container(
+          width: double.infinity,
+          padding: const EdgeInsets.symmetric(vertical: 16),
+          decoration: BoxDecoration(
+            color: _getStatusBadgeColor(task.status, task.isExpired).withOpacity(0.1),
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: _getStatusBadgeColor(task.status, task.isExpired),
+              width: 2,
+            ),
+          ),
+          child: Text(
+            _getActionMessage(task.status, task.isExpired),
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
+              color: _getStatusBadgeColor(task.status, task.isExpired),
+            ),
+          ),
+        ),
+      ),
     );
+  }
+
+  String _getActionMessage(String status, bool isExpired) {
+    if (isExpired) return 'This task has expired';
+    
+    switch (status.toLowerCase()) {
+      case 'submitted':
+        return 'Waiting for parent approval';
+      case 'completed':
+        return 'Task completed! Points awarded';
+      case 'declined':
+        return 'Task was declined by parent';
+      default:
+        return 'Unknown status';
+    }
   }
 
   String _formatDate(String? dateStr) {
@@ -545,16 +598,6 @@ class TaskDetailsScreen extends StatelessWidget {
     try {
       final date = DateTime.parse(dateStr);
       return DateFormat('d MMM yyyy').format(date);
-    } catch (e) {
-      return 'Invalid date';
-    }
-  }
-
-  String _formatDateTime(String? dateStr) {
-    if (dateStr == null || dateStr.isEmpty) return 'N/A';
-    try {
-      final date = DateTime.parse(dateStr);
-      return DateFormat('yyyy/MM/dd hh:mm a').format(date);
     } catch (e) {
       return 'Invalid date';
     }
@@ -622,7 +665,7 @@ class TaskDetailsScreen extends StatelessWidget {
       case 'declined':
         return 'Task was rejected by parent';
       case 'pending':
-        return 'Waiting for child to complete';
+        return 'Ready to be completed and submitted';
       default:
         return 'Unknown status';
     }

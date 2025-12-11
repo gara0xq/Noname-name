@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:testss/features/child/home/view/screens/rewards_screen.dart';
 
 import '../../../../../core/constants/app_colors.dart';
 import '../../controller/home_controller.dart';
@@ -76,7 +77,7 @@ class ChildMainScreen extends StatelessWidget {
                         ],
                       ),
                     ),
-              Expanded(child: TasksScreen()),
+              Expanded(child: controller.pageIndex == 0 ? TasksScreen() : RewardsScreen()),
             ],
           );
         }),

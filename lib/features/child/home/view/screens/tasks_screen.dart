@@ -4,7 +4,7 @@ import 'package:get/get.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../controller/home_controller.dart';
 import '../widget/task_card_widget.dart';
-import '../widget/task_filer_widget.dart';
+import '../widget/task_filter_widget.dart';
 
 class TasksScreen extends StatelessWidget {
   const TasksScreen({super.key});
@@ -13,7 +13,9 @@ class TasksScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        // const TaskFilterWidget(),
+        // Filter Widget - يتم تحميل المهام مرة واحدة فقط والفلترة تتم محلياً
+        const TaskFilterWidget(),
+        
         Expanded(
           child: GetBuilder<HomeController>(
             builder: (controller) {
@@ -72,7 +74,7 @@ class TasksScreen extends StatelessWidget {
               if (controller.filteredTasks.isEmpty) {
                 String emptyMessage = 'No tasks found';
                 String emptySubtitle =
-                    'Try changing the filter or create new tasks';
+                    'Try changing the filter or wait for new tasks';
 
                 if (controller.currentFilter.value != null) {
                   switch (controller.currentFilter.value) {
@@ -83,15 +85,15 @@ class TasksScreen extends StatelessWidget {
                       break;
                     case 'submitted':
                       emptyMessage = 'No submitted tasks';
-                      emptySubtitle = 'No tasks are waiting for your approval';
+                      emptySubtitle = 'No tasks are waiting for parent approval';
                       break;
                     case 'completed':
                       emptyMessage = 'No completed tasks';
                       emptySubtitle = 'No tasks have been approved yet';
                       break;
-                    case 'expired_declined':
+                    case 'expired_Declined':
                       emptyMessage = 'No expired or declined tasks';
-                      emptySubtitle = 'Great! All tasks are active and valid';
+                      emptySubtitle = 'Great! All your tasks are active';
                       break;
                   }
                 }
@@ -155,30 +157,6 @@ class TasksScreen extends StatelessWidget {
                                 ),
                                 child: const Text(
                                   'Show All Tasks',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                  ),
-                                ),
-                              )
-                            else
-                              ElevatedButton(
-                                onPressed: () {
-                                  Get.offAllNamed("/main");
-                                },
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: AppColors.darkPrimary,
-                                  shape: RoundedRectangleBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                  ),
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 30,
-                                    vertical: 14,
-                                  ),
-                                ),
-                                child: const Text(
-                                  'Go Back',
                                   style: TextStyle(
                                     fontSize: 16,
                                     color: Colors.white,
