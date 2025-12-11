@@ -45,7 +45,8 @@ class AuthController extends GetxController {
           await sharedPreferances.setString("token", token);
 
           AppConstants.AUTH_TOKEN = response.data["token"];
-          AppConstants.USER_TYPE = "parent";
+          final userType = "parent";
+          await sharedPreferances.setString("user-type", userType);
 
           final hasChildren = await _checkIfUserHasChildren();
 

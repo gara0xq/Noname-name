@@ -46,6 +46,9 @@ dependencies:
   auto_size_text: ^3.0.0
   share_plus: ^12.0.1
   pin_code_fields: ^8.0.1
+  image_picker: ^1.2.1
+  permission_handler: ^12.0.1
+  cloudinary: ^1.2.0
 
 dev_dependencies:
   flutter_test:

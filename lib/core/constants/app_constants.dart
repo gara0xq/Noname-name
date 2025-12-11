@@ -11,5 +11,5 @@ class AppConstants {
 
   static const String TOKEN_KEY = "token";
 
-  static String USER_TYPE = "child";
+  static String USER_TYPE = "parent";
 }

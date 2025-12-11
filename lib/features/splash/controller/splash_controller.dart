@@ -1,4 +1,5 @@
 import 'dart:async';
+import 'dart:developer';
 import 'package:aes256/aes256.dart';
 import 'package:get/get.dart';
 import 'package:flutter/material.dart';
@@ -29,6 +30,8 @@ class SplashController extends GetxController {
 
       final sharedPreferances = await SharedPreferences.getInstance();
       final token = sharedPreferances.getString(AppConstants.TOKEN_KEY);
+      AppConstants.USER_TYPE =
+          sharedPreferances.getString("user-type") ?? "parent";
 
       Future.delayed(Duration(seconds: 5), () async {
         if (token == null) {
@@ -38,6 +41,7 @@ class SplashController extends GetxController {
             encrypted: token,
             passphrase: AppConstants.HASHER_KEY,
           ).toString();
+          log(AppConstants.USER_TYPE);
           if (AppConstants.USER_TYPE == "parent") {
             Get.offAllNamed("/main");
           } else {

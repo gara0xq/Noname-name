@@ -1,10 +1,18 @@
+import 'dart:developer';
+import 'dart:io';
+
+import 'package:cloudinary/cloudinary.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
+import 'package:image_picker/image_picker.dart';
+import 'package:permission_handler/permission_handler.dart';
 import '../../../../core/constants/app_colors.dart';
 import '../../../../core/services/dio_client.dart';
+import '../../../../core/services/rewards_service.dart';
 import '../../../../core/services/tasks_service.dart';
 import '../model/child_model.dart';
+import '../model/reward_model.dart';
 import '../model/task_model.dart';
 import 'home_controller.dart';
 
@@ -16,6 +24,10 @@ class ChildDetailsController extends GetxController
   ChildDetailsController({required this.child});
 
   late TabController tabController;
+
+  final RewardsService _rewardsService = RewardsService();
+  List<RewardModel> rewardsList = <RewardModel>[].obs;
+  final isLoadingRewards = true.obs;
 
   final tasksList = <TaskModel>[].obs;
   final isLoadingTasks = true.obs;
@@ -29,11 +41,19 @@ class ChildDetailsController extends GetxController
   final punishmentController = TextEditingController();
   final isAddingTask = false.obs;
 
+  // Add Reward Form
+  final addRewardFormKey = GlobalKey<FormState>();
+  final rewardTitleController = TextEditingController();
+  final rewardPointsController = TextEditingController();
+  Rx<XFile?> selectedRewardImage = Rx<XFile?>(null);
+  final isUploadingReward = false.obs;
+
   @override
   void onInit() {
     super.onInit();
     tabController = TabController(length: 2, vsync: this);
     fetchChildTasks();
+    fetchChildRewards();
   }
 
   Future<void> fetchChildTasks() async {
@@ -41,16 +61,36 @@ class ChildDetailsController extends GetxController
 
     try {
       final tasks = await _tasksService.getChildTasks(child.code);
-      
+
       tasksList.clear();
       tasksList.addAll(tasks);
-      
+
       print(' Child tasks loaded: ${tasks.length} tasks for ${child.name}');
     } catch (e) {
       _showErrorSnackbar('Failed to load tasks');
       print(' Error fetching child tasks: $e');
     } finally {
       isLoadingTasks.value = false;
+    }
+  }
+
+  Future<void> fetchChildRewards() async {
+    isLoadingRewards.value = true;
+
+    try {
+      log('📋 Fetching rewards for child: ${child.code}');
+
+      final data = await _rewardsService.getChildRewards(child.code);
+
+      rewardsList.clear();
+      rewardsList = data.map((e) => RewardModel.fromMap(e)).toList();
+
+      log('✅ Rewards loaded: ${rewardsList.length} rewards for ${child.name}');
+    } catch (e) {
+      _showErrorSnackbar('Failed to load rewards');
+      log('❌ Error fetching rewards: $e');
+    } finally {
+      isLoadingRewards.value = false;
     }
   }
 
@@ -101,7 +141,9 @@ class ChildDetailsController extends GetxController
           points: int.parse(pointsController.text),
           childCode: child.code,
           punishment: punishmentController.text,
-          expireDate: dateController.text.isNotEmpty ? dateController.text : null,
+          expireDate: dateController.text.isNotEmpty
+              ? dateController.text
+              : null,
         );
 
         isAddingTask.value = false;
@@ -266,6 +308,84 @@ class ChildDetailsController extends GetxController
       backgroundColor: Colors.red,
       colorText: Colors.white,
     );
+  }
+
+  Future pickRewardImage() async {
+    PermissionStatus photosStatus = await Permission.photos.request();
+    final ImagePicker _picker = ImagePicker();
+
+    if (photosStatus.isGranted) {
+      final image = await _picker.pickImage(source: ImageSource.gallery);
+      if (image != null) {
+        selectedRewardImage.value = image;
+        image.readAsBytes();
+      }
+    }
+  }
+
+  Future<String> uploadImage(String? filePath, List<int> fileBytes) async {
+    isUploadingReward.value = true;
+    final Cloudinary cloudinary = Cloudinary.signedConfig(
+      apiKey: "381892251377675",
+      apiSecret: "vtLf6BfJ4irTC2VT9hAc2N3KVqE",
+      cloudName: "do3ob6bif",
+    );
+
+    try {
+      final response = await cloudinary.upload(
+        file: filePath,
+        fileBytes: fileBytes,
+        resourceType: CloudinaryResourceType.image,
+        fileName: filePath!.split("/").last ?? "image",
+        folder: "internship2025",
+      );
+      return response.secureUrl!;
+    } catch (e) {
+      log(e.toString());
+    } finally {
+      isUploadingReward.value = false;
+    }
+    return "";
+  }
+
+  Future addReward() async {
+    final fileBytes = await selectedRewardImage.value!.readAsBytes();
+    final imageUrl = await uploadImage(
+      selectedRewardImage.value!.path,
+      fileBytes as List<int>,
+    );
+
+    const String uri = '/user/parent/addReward';
+    final dioClient = DioClient(hasToken: true);
+    isAddingTask.value = true;
+
+    try {
+      final response = await dioClient.post(
+        uri: uri,
+        data: RewardModel(
+          title: rewardTitleController.text,
+          imageUrl: imageUrl,
+          points: int.tryParse(rewardPointsController.text)!,
+        ).toMap(child.code),
+      );
+
+      isAddingTask.value = false;
+
+      if (response.statusCode == 200 || response.statusCode == 201) {
+        _showSuccessSnackbar('Added reward successfully');
+
+        if (Get.isRegistered<HomeController>()) {
+          final homeController = Get.find<HomeController>();
+          await homeController.onRefresh();
+        }
+        Get.offAllNamed("/main");
+      } else {
+        _showErrorSnackbar(response.data["message"]);
+      }
+    } catch (e) {
+      isDeleting.value = false;
+      _showErrorSnackbar('Failed to add reward. Please try again.');
+    }
   }
 
   @override

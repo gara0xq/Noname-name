@@ -6,6 +6,7 @@ import 'package:testss/features/parent/home/view/widgets/home_top_bar.dart';
 import '../../../../../core/constants/app_colors.dart';
 import '../../controller/child_details_controller.dart';
 import '../../model/child_model.dart';
+import '../widgets/add_reward_dialog.dart';
 import '../widgets/task_card_widget.dart';
 import '../widgets/add_task_dialog.dart';
 
@@ -96,13 +97,20 @@ class ChildDetailsScreen extends StatelessWidget {
           Expanded(
             child: TabBarView(
               controller: controller.tabController,
-              children: [_buildTasksTab(controller, child), _buildRewardsTab()],
+              children: [
+                _buildTasksTab(controller, child),
+                _buildRewardsTab(controller, child),
+              ],
             ),
           ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () => Get.dialog(const AddTaskDialog()),
+        onPressed: () => Get.dialog(
+          controller.tabController.index == 0
+              ? AddTaskDialog()
+              : AddRewardDialog(),
+        ),
         backgroundColor: AppColors.darkPrimary,
         child: const Icon(Icons.add, color: Colors.white),
       ),
@@ -357,23 +365,123 @@ class ChildDetailsScreen extends StatelessWidget {
     });
   }
 
-  Widget _buildRewardsTab() {
-    return const Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Icon(Icons.card_giftcard, size: 80, color: Colors.grey),
-          SizedBox(height: 16),
-          Text(
-            'Rewards coming soon',
-            style: TextStyle(
-              fontSize: 18,
-              color: Colors.grey,
-              fontWeight: FontWeight.w500,
-            ),
+  Widget _buildRewardsTab(ChildDetailsController controller, ChildModel child) {
+    return Obx(() {
+      if (controller.isLoadingRewards.value) {
+        return const Center(
+          child: CircularProgressIndicator(color: AppColors.primaryGreen),
+        );
+      }
+
+      if (controller.rewardsList.isEmpty) {
+        return const Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(Icons.card_giftcard, size: 80, color: Colors.grey),
+              SizedBox(height: 16),
+              Text(
+                'Rewards coming soon',
+                style: TextStyle(
+                  fontSize: 18,
+                  color: Colors.grey,
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+            ],
           ),
-        ],
-      ),
-    );
+        );
+      }
+
+      return GridView.builder(
+        gridDelegate: SliverGridDelegateWithMaxCrossAxisExtent(
+          maxCrossAxisExtent: 300,
+          childAspectRatio: 9 / 12,
+        ),
+
+        itemCount: controller.rewardsList.length,
+        itemBuilder: (_, i) {
+          final reward = controller.rewardsList[i];
+          return Container(
+            margin: EdgeInsets.all(10),
+            child: Column(
+              children: [
+                Expanded(
+                  child: Container(
+                    padding: EdgeInsets.all(10),
+                    decoration: BoxDecoration(
+                      color: AppColors.taskCardYellow,
+                      borderRadius: reward.redeemed
+                          ? BorderRadius.only(
+                              topLeft: Radius.circular(12),
+                              topRight: Radius.circular(12),
+                            )
+                          : BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      spacing: 10,
+                      children: [
+                        Expanded(
+                          flex: 2,
+                          child: Center(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(7),
+                                image: DecorationImage(
+                                  image: NetworkImage(reward.imageUrl),
+                                  fit: BoxFit.cover,
+                                ),
+                              ),
+                            ),
+                          ),
+                        ),
+                        Text(
+                          reward.title,
+                          style: TextStyle(
+                            color: AppColors.beigeBackground,
+                            fontSize: 16,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        Row(
+                          spacing: 7,
+                          children: [
+                            SvgPicture.asset(
+                              "assets/icons/star.svg",
+                              color: AppColors.beigeBackground,
+                              width: 20,
+                            ),
+                            Text(
+                              reward.points.toString(),
+                              style: TextStyle(
+                                color: AppColors.beigeBackground,
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+                if (reward.redeemed)
+                  Container(
+                    height: 10,
+                    decoration: BoxDecoration(
+                      color: AppColors.primaryGreen,
+                      borderRadius: BorderRadius.only(
+                        bottomLeft: Radius.circular(12),
+                        bottomRight: Radius.circular(12),
+                      ),
+                    ),
+                  ),
+              ],
+            ),
+          );
+        },
+      );
+    });
   }
 }
